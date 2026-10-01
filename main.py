@@ -1,7 +1,10 @@
 import pandas as pd
+from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.linear_model import LogisticRegression
 import nltk
 from nltk.tokenize import sent_tokenize, word_tokenize
+from scipy.sparse import hstack, csr_matrix
 
 # Loading fake reviews dataset as csv and dropping unneeded columns
 reviews = pd.read_csv("data/final_labeled_fake_reviews.csv")
@@ -11,6 +14,20 @@ print(reviews.shape)
 # Removing rows with missing data
 reviews = reviews.dropna()
 print(reviews.shape)
+print(reviews.columns)
+
+# Sorting reviews DataFrame into features and label
+X = reviews[["rating", "title", "text", "helpful_vote", "verified_purchase"]]
+y = reviews["label"]
+
+# Stratified train-test split
+X_train, X_test, y_train, y_test = train_test_split(
+    X,
+    y,
+    test_size=0.2,
+    random_state=1,
+    stratify=y
+)
 
 # TF-IDF for reviews title column
 title_vectorizer = TfidfVectorizer(
@@ -18,18 +35,53 @@ title_vectorizer = TfidfVectorizer(
     stop_words='english',
 )
 
-X_title = title_vectorizer.fit_transform(reviews["title"])
-
-# TF-IDF for review text column
 text_vectorizer = TfidfVectorizer(
     lowercase=True,
     stop_words='english',
 )
 
-X_text = text_vectorizer.fit_transform(reviews["text"])
+# Applying TF-IDF to title and text corpus
+X_train_title = title_vectorizer.fit_transform(X_train["title"])
+X_train_text = text_vectorizer.fit_transform(X_train["text"])
+
+X_test_title = title_vectorizer.transform(X_test["title"])
+X_test_text = text_vectorizer.transform(X_test["text"])
+
+# Converting numeric features to csr matrix for hstack with corpus features
+X_train_numeric = csr_matrix(
+    X_train[["rating", "helpful_vote"]].values
+)
+
+X_test_numeric = csr_matrix(
+    X_test[["rating", "helpful_vote"]].values
+)
+
+# Converting boolean verified_purchase column to numeric encodings
+X_train_vp = csr_matrix(
+    X_train["verified_purchase"].map({"TRUE": 1, "FALSE": 0}).values.reshape(-1, 1)
+)
+
+X_test_vp = csr_matrix(
+    X_test["verified_purchase"].map({"TRUE": 1, "FALSE": 0}).values.reshape(-1, 1)
+)
+
+# Horizontally stacking train and test text-based data with other feature columns
+X_train = hstack([
+    X_train_title,
+    X_train_text,
+    X_train_numeric,
+    X_train_vp
+])
+
+X_test = hstack([
+    X_test_title,
+    X_test_text,
+    X_test_numeric,
+    X_test_vp
+])
 
 # Printing shapes of X_title and X_text matrices
-print("Title TF-IDF:", X_title.shape)
-print("Text TF-IDF:", X_text.shape)
+print("X_train TF-IDF:", X_train.shape)
+print("X_test TF-IDF:", X_test.shape)
 
 
