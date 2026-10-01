@@ -1,7 +1,7 @@
 import pandas as pd
+from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.svm import LinearSVC, SVC
 from sklearn.metrics import classification_report, confusion_matrix
 import nltk
 from nltk.tokenize import sent_tokenize, word_tokenize
@@ -82,25 +82,13 @@ X_test = hstack([
 print("X_train TF-IDF:", X_train.shape)
 print("X_test TF-IDF:", X_test.shape)
 
-# LinearSVC Gridsearch
-params = {"C": [0.1, 1, 10, 100, 1000],
-          "gamma": [1, 0.1, 0.01, 0.001, 0.0001],
-}
+# Training Logistic Regression Model
+model = LogisticRegression(max_iter=1000)
+model.fit(X_train, y_train)
 
-grid = GridSearchCV(SVC(), params, refit = True, verbose = 3, n_jobs = -1)
-grid.fit(X_train, y_train)
+y_pred = model.predict(X_test)
 
-y_pred = grid.predict(X_test)
 print(classification_report(y_test, y_pred))
 print(confusion_matrix(y_test, y_pred))
-
-# Training Logistic Regression Model
-# model = LinearSVC()
-# model.fit(X_train, y_train)
-#
-# y_pred = model.predict(X_test)
-#
-# print(classification_report(y_test, y_pred))
-# print(confusion_matrix(y_test, y_pred))
 
 
