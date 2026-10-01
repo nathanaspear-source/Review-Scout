@@ -1,11 +1,11 @@
 import pandas as pd
+from multipart import file_path
 from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics import classification_report, confusion_matrix
-import nltk
-from nltk.tokenize import sent_tokenize, word_tokenize
 from scipy.sparse import hstack, csr_matrix
+import joblib
 
 # Loading fake reviews dataset as csv and dropping unneeded columns
 reviews = pd.read_csv("data/final_labeled_fake_reviews.csv")
@@ -90,5 +90,9 @@ y_pred = model.predict(X_test)
 
 print(classification_report(y_test, y_pred))
 print(confusion_matrix(y_test, y_pred))
+
+# Saving ML model to disk
+joblib.dump(model, "ml_model/ml_model.joblib")
+print("Model saved successfully")
 
 
