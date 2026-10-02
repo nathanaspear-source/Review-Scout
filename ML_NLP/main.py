@@ -91,7 +91,14 @@ model.fit(X_train, y_train)
 y_pred = model.predict(X_test)
 
 # Saving ML model to disk
-joblib.dump(model, "ml_model/ml_model.joblib")
+joblib.dump(
+    {
+        "ml_model": model,
+        "title_vectorizer": title_vectorizer,
+        "text_vectorizer": text_vectorizer,
+    },
+    "ml_model/models.joblib"
+)
 print("Model saved successfully")
 
 # Printing model evaluation scores
@@ -164,4 +171,21 @@ print(get_top_words(title_words, title_coefficients, direction=0))
 print("\nTop text terms associated with real reviews:")
 print(get_top_words(text_words, text_coefficients, direction=0), "\n")
 
+# Model feature importance
+feature_names = np.concatenate([
+    "title: " + title_words,
+    "text: " + text_words,
+    np.array(["rating", "helpful_vote", "verified_purchase"]),
+])
 
+feature_importance = pd.DataFrame({
+    "Feature": feature_names,
+    "Importance": np.abs(coefficients),
+    "Coefficient": coefficients,
+})
+
+feature_importance = feature_importance.sort_values(
+    by="Importance", ascending=False
+)
+
+print(feature_importance.head(20))
