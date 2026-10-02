@@ -1,5 +1,5 @@
+import numpy as np
 import pandas as pd
-from multipart import file_path
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -31,11 +31,13 @@ X_train, X_test, y_train, y_test = train_test_split(
 title_vectorizer = TfidfVectorizer(
     lowercase=True,
     stop_words='english',
+    ngram_range=(1, 2),
 )
 
 text_vectorizer = TfidfVectorizer(
     lowercase=True,
     stop_words='english',
+    ngram_range=(1, 2),
 )
 
 # Applying TF-IDF to title and text corpus
@@ -88,11 +90,78 @@ model.fit(X_train, y_train)
 
 y_pred = model.predict(X_test)
 
-print(classification_report(y_test, y_pred))
-print(confusion_matrix(y_test, y_pred))
-
 # Saving ML model to disk
 joblib.dump(model, "ml_model/ml_model.joblib")
 print("Model saved successfully")
+
+# Printing model evaluation scores
+print(classification_report(y_test, y_pred))
+print(confusion_matrix(y_test, y_pred))
+
+# Getting coefficients learned by Logistic Regression Model
+coefficients = model.coef_[0]
+
+# Getting number of features in each TF-IDF matrix
+n_title = X_train_title.shape[1]
+n_text = X_train_text.shape[1]
+
+# Getting TF-IDF feature names
+title_words = title_vectorizer.get_feature_names_out()
+text_words = text_vectorizer.get_feature_names_out()
+
+# Coefficients for each feature group
+title_coefficients = coefficients[:n_title]
+text_coefficients = coefficients[n_title:n_title + n_text]
+
+numeric_coefficients = coefficients[
+    n_title + n_text:
+    n_title + n_text + X_train_numeric.shape[1]
+]
+
+vp_coefficients = coefficients[
+    n_title + n_text + X_train_numeric.shape[1]:
+]
+
+# Checking to see if length of word and coefficient arrays are same length for title and text features
+print("\n Title:", len(title_words), len(title_coefficients))
+print("Text:", len(text_words), len(text_coefficients), "\n")
+
+def get_top_words(words, coefs, n=5, direction=1):
+    results = pd.DataFrame({
+        "word_or_phrase": words,
+        "coefficient": coefs,
+    })
+
+    results["direction"] = np.where(
+        results["coefficient"] > 0,
+        "Fake (class 1)",
+        "Genuine (class 0)"
+    )
+
+    if direction == 1:
+        return results.sort_values(
+            "coefficient", ascending=False
+        ).head(n)
+
+    elif direction == 0:
+        return results.sort_values(
+            "coefficient", ascending=True
+        ).head(n)
+    else:
+        print("Invalid direction")
+
+print("Top title terms associated with fake reviews:")
+print(get_top_words(title_words, title_coefficients, direction=1))
+
+print("\nTop text terms associated with fake reviews:")
+print(get_top_words(text_words, text_coefficients, direction=1), "\n")
+
+print("=" * 60)
+
+print("Top title terms associated with real reviews:")
+print(get_top_words(title_words, title_coefficients, direction=0))
+
+print("\nTop text terms associated with real reviews:")
+print(get_top_words(text_words, text_coefficients, direction=0), "\n")
 
 
