@@ -85,8 +85,9 @@ X_test = hstack([
 ])
 
 # Printing shapes of X_title and X_text matrices
-print("X_train TF-IDF:", X_train.shape)
-print("X_test TF-IDF:", X_test.shape)
+print("X_train TF-IDF Shape:", X_train.shape)
+print("X_test TF-IDF Shape:", X_test.shape, "\n")
+print("=" * 60, "\n")
 
 # Training Logistic Regression Model
 model = LogisticRegression(max_iter=1000)
@@ -104,11 +105,14 @@ joblib.dump(
     },
     MODEL_PATH
 )
-print("Model saved successfully")
+print("\nModel saved successfully\n")
+print("=" * 60, "\n")
 
 # Printing model evaluation scores
 print(classification_report(y_test, y_pred))
+print("\n Confusion Matrix:\n")
 print(confusion_matrix(y_test, y_pred))
+print("\n", "=" * 60, "\n")
 
 # Getting coefficients learned by Logistic Regression Model
 coefficients = model.coef_[0]
@@ -133,6 +137,7 @@ numeric_coefficients = coefficients[
 ]
 
 # Checking to see if length of word and coefficient arrays are same length for title and text features
+print("Check to see if length of word and coefficient arrays are equal")
 print("\n Title:", len(title_words), len(title_coefficients))
 print("Text:", len(text_words), len(text_coefficients), "\n")
 
@@ -166,13 +171,18 @@ print(get_top_words(title_words, title_coefficients, direction=1))
 print("\nTop text terms associated with fake reviews:")
 print(get_top_words(text_words, text_coefficients, direction=1), "\n")
 
-print("=" * 60)
+print("=" * 60, "\n")
 
 print("Top title terms associated with real reviews:")
 print(get_top_words(title_words, title_coefficients, direction=0))
 
 print("\nTop text terms associated with real reviews:")
 print(get_top_words(text_words, text_coefficients, direction=0), "\n")
+
+print("Top text char terms associated with fake reviews:")
+print(get_top_words(char_features, char_coefficients, direction=0))
+
+print("\n", "=" * 60, "\n")
 
 # Model feature importance
 feature_names = np.concatenate([
@@ -192,4 +202,5 @@ feature_importance = feature_importance.sort_values(
     by="Importance", ascending=False
 )
 
+print("Most important terms found by model:")
 print(feature_importance.head(20))
