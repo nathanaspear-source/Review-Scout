@@ -6,9 +6,13 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics import classification_report, confusion_matrix
 from scipy.sparse import hstack, csr_matrix
 import joblib
+from pathlib import Path
+
+DATA_PATH = Path(__file__).resolve().parent/"data"/"final_labeled_fake_reviews.csv"
+MODEL_PATH = Path(__file__).resolve().parent/"ml_model"/"models.joblib"
 
 # Loading fake reviews dataset as csv and dropping unneeded columns
-reviews = pd.read_csv("ML_NLP/data/final_labeled_fake_reviews.csv")
+reviews = pd.read_csv(DATA_PATH)
 reviews = reviews.drop(["images", "verified_purchase", "asin", "parent_asin", "timestamp", "user_timestamp"], axis=1)
 
 # Removing rows with missing data
@@ -56,16 +60,27 @@ X_test_numeric = csr_matrix(
     X_test[["rating", "helpful_vote"]].values
 )
 
+text_char_vectorizer = TfidfVectorizer(
+    analyzer="char_wb",
+    ngram_range=(3, 5),
+    max_features=30000,
+)
+
+X_train_text_char = text_char_vectorizer.fit_transform(X_train["text"])
+X_test_text_char = text_char_vectorizer.transform(X_test["text"])
+
 # Horizontally stacking train and test text-based data with other feature columns
 X_train = hstack([
     X_train_title,
     X_train_text,
+    X_train_text_char,
     X_train_numeric,
 ])
 
 X_test = hstack([
     X_test_title,
     X_test_text,
+    X_test_text_char,
     X_test_numeric,
 ])
 
@@ -85,8 +100,9 @@ joblib.dump(
         "ml_model": model,
         "title_vectorizer": title_vectorizer,
         "text_vectorizer": text_vectorizer,
+        "text_char_vectorizer": text_char_vectorizer,
     },
-    "ml_model/models.joblib"
+    MODEL_PATH
 )
 print("Model saved successfully")
 
@@ -100,18 +116,20 @@ coefficients = model.coef_[0]
 # Getting number of features in each TF-IDF matrix
 n_title = X_train_title.shape[1]
 n_text = X_train_text.shape[1]
+n_text_char = X_train_text_char.shape[1]
 
 # Getting TF-IDF feature names
 title_words = title_vectorizer.get_feature_names_out()
 text_words = text_vectorizer.get_feature_names_out()
+char_features = text_char_vectorizer.get_feature_names_out()
 
 # Coefficients for each feature group
 title_coefficients = coefficients[:n_title]
 text_coefficients = coefficients[n_title:n_title + n_text]
+char_coefficients = coefficients[n_title + n_text:n_title + n_text+ n_text_char]
 
 numeric_coefficients = coefficients[
-    n_title + n_text:
-    n_title + n_text + X_train_numeric.shape[1]
+    n_title + n_text + n_text_char:
 ]
 
 # Checking to see if length of word and coefficient arrays are same length for title and text features
@@ -160,7 +178,8 @@ print(get_top_words(text_words, text_coefficients, direction=0), "\n")
 feature_names = np.concatenate([
     "title: " + title_words,
     "text: " + text_words,
-    np.array(["rating", "helpful_vote", "verified_purchase"]),
+    "text_char: " + char_features,
+    np.array(["rating", "helpful_vote"]),
 ])
 
 feature_importance = pd.DataFrame({

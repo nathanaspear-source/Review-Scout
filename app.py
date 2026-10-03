@@ -61,6 +61,7 @@ if entered == True:
     title_vectorizer = models["title_vectorizer"]
     text_vectorizer = models["text_vectorizer"]
     loaded_model = models["ml_model"]
+    text_char_vectorizer = models["text_char_vectorizer"]
 
     # Converting user input in Streamlit UI into DataFrame the ML
     # model can interpret
@@ -75,6 +76,7 @@ if entered == True:
     # Applying fitted TF-IDF Vectorizers to new review's title and text
     title = title_vectorizer.transform(new_review["title"])
     text = text_vectorizer.transform(new_review["text"])
+    text_char = text_char_vectorizer.transform(new_review["text"])
 
     # Converting numeric and numerically encoded features of new review to CSR
     # matrices so they can be horizontally stacked later with other features
@@ -87,6 +89,7 @@ if entered == True:
     new_review = hstack([
         title,
         text,
+        text_char,
         numeric_features,
     ])
 
@@ -109,12 +112,13 @@ if entered == True:
     # Finding most important words that contributed to ML model's prediction
     coefficients = loaded_model.coef_[0]
     n_title = title.shape[1]
+    n_text = text.shape[1]
     title_terms = ranked_terms(
-        text_vectorizer, text, coefficients[n_title:n_title + text.shape[1]], "title",
+        title_vectorizer, title, coefficients[:n_title], "title",
     )
 
     text_terms = ranked_terms(
-        text_vectorizer, text, coefficients[n_title:n_title + text.shape[1]], "text",
+        text_vectorizer, text, coefficients[n_title:n_title + n_text], "text",
     )
 
     important_words = sorted(
