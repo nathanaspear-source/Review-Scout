@@ -8,7 +8,7 @@ from scipy.sparse import hstack, csr_matrix
 import joblib
 
 # Loading fake reviews dataset as csv and dropping unneeded columns
-reviews = pd.read_csv("data/final_labeled_fake_reviews.csv")
+reviews = pd.read_csv("ML_NLP/data/final_labeled_fake_reviews.csv")
 reviews = reviews.drop(["images", "asin", "parent_asin", "timestamp", "user_timestamp"], axis=1)
 
 # Removing rows with missing data
