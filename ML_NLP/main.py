@@ -9,13 +9,13 @@ import joblib
 
 # Loading fake reviews dataset as csv and dropping unneeded columns
 reviews = pd.read_csv("ML_NLP/data/final_labeled_fake_reviews.csv")
-reviews = reviews.drop(["images", "asin", "parent_asin", "timestamp", "user_timestamp"], axis=1)
+reviews = reviews.drop(["images", "verified_purchase", "asin", "parent_asin", "timestamp", "user_timestamp"], axis=1)
 
 # Removing rows with missing data
 reviews = reviews.dropna()
 
 # Sorting reviews DataFrame into features and label
-X = reviews[["rating", "title", "text", "helpful_vote", "verified_purchase"]]
+X = reviews[["rating", "title", "text", "helpful_vote"]]
 y = reviews["label"]
 
 # Stratified train-test split
@@ -56,28 +56,17 @@ X_test_numeric = csr_matrix(
     X_test[["rating", "helpful_vote"]].values
 )
 
-# Converting boolean verified_purchase column to numeric encodings
-X_train_vp = csr_matrix(
-    X_train["verified_purchase"].astype(int).values.reshape(-1, 1)
-)
-
-X_test_vp = csr_matrix(
-    X_test["verified_purchase"].astype(int).values.reshape(-1, 1)
-)
-
 # Horizontally stacking train and test text-based data with other feature columns
 X_train = hstack([
     X_train_title,
     X_train_text,
     X_train_numeric,
-    X_train_vp
 ])
 
 X_test = hstack([
     X_test_title,
     X_test_text,
     X_test_numeric,
-    X_test_vp
 ])
 
 # Printing shapes of X_title and X_text matrices
@@ -123,10 +112,6 @@ text_coefficients = coefficients[n_title:n_title + n_text]
 numeric_coefficients = coefficients[
     n_title + n_text:
     n_title + n_text + X_train_numeric.shape[1]
-]
-
-vp_coefficients = coefficients[
-    n_title + n_text + X_train_numeric.shape[1]:
 ]
 
 # Checking to see if length of word and coefficient arrays are same length for title and text features

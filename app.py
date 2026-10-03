@@ -45,8 +45,6 @@ st.subheader("NLP + ML Powered Fake Amazon Review Detector")
 st.write("What did the reviewer rate the product")
 star_rating = st.feedback(options="stars")
 
-verified_purchaser = st.checkbox(label="Was the review written by a verified purchaser?")
-
 helpful_votes = st.number_input(label="How many people found this review helpful?", step=1)
 
 title = st.text_input("Enter the title of the Amazon review:")
@@ -70,7 +68,7 @@ if entered == True:
             "title": [title],
             "text": [text],
             "helpful_votes": [helpful_votes],
-            "verified_purchase": [verified_purchaser]}
+        }
 
     new_review = pd.DataFrame(new_review_data)
 
@@ -84,17 +82,12 @@ if entered == True:
         new_review[["rating", "helpful_votes"]].values
     )
 
-    verified_purchaser = csr_matrix(
-        new_review[["verified_purchase"]].astype(int).values.reshape(-1, 1)
-    )
-
     # Horizontally stacking all new review features into numpy array
     # for model label prediction
     new_review = hstack([
         title,
         text,
         numeric_features,
-        verified_purchaser
     ])
 
     # Predicting whether review is fake or real and then
