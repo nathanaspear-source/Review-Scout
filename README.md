@@ -88,7 +88,7 @@ to run this app if your primary goal is to use it and see its functionality.
 
 ### 1. Clone Repository
 ```bash
-git clone https://github.com/malik-awais-py/Review-Scout.git
+git clone https://github.com/nathanaspear-source/Review-Scout.git
 cd Review-Scout
 ```
 
