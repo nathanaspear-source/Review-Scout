@@ -11,7 +11,7 @@ def load_models():
     return joblib.load("ML_NLP/ml_model/models.joblib")
 
 def ranked_terms(vectorizer, matrix, coefficients, source, top_n=5):
-    """Returns DataFrame of most important terms ranked by score."""
+    """Returns DataFrame of the most important terms ranked by score."""
     names = vectorizer.get_feature_names_out()
     row = matrix.toarray()[0]
     terms = []
