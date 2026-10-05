@@ -1,5 +1,7 @@
 # Review Scout
-> **Review Scout** is an app that can predict whether an Amazon review is real or fake.
+> **Review Scout** is an NLP + ML powered app that can predict whether an Amazon review is real or fake.
+
+![Review Scout](Images/Review_Scout_Image.png)
 
 ## Project Description
 **Review Scout** is a Streamlit app that utilizes natural language processing and machine
@@ -14,6 +16,15 @@ to the model's predictions.
 ## Table of Contents
 - [Project Description](#project-description)
 - [Features Overview](#features-overview)
+- [Natural Language Processing Explaination](#natural-language-processing-explaination)
+- [Machine Learning Explaination](#machine-learning-explaination)
+- [Machine Learning Model Performance Evaluation](#machine-learning-model-performance-evaluation)
+- [Docker Deployment](#docker-deployment)
+- [UI Framework](#ui-framework)
+- [Installation and Running](#installation-and-running)
+- [Why I Built Review Scout and What I Learned](#why-i-built-review-scout-and-what-i-learned)
+- [Contact Information](#contact-information)
+- [References](#references)
 
 ## Features Overview
 - Streamlit UI input elements that allow users to input the specific details of an Amazon review
@@ -47,6 +58,9 @@ coefficient by the TF-IDF term's value. Also, when comparing the logistic regres
 model, it performed very similarly while requiring much less time and computation power to train.
 
 ## Machine Learning Model Performance Evaluation
+
+![ML Evaluation](Images/ML_Evaluation_Image.png)
+
 To evaluate the performance of the logistic regression model, I used precision, recall, f1-score, support, and a confusion
 matrix. The precision, recall, and f1-score values were moderate, all falling between 0.75 and 0.78. The support value was almost a 
 50/50 split between classes 1 and 0. The training and test sets were mostly balanced because I used a stratified split, which preserves 
@@ -109,9 +123,28 @@ at Maryville University, and I wanted to review these topics and apply my knowle
 of homework. I also would like to pursue a career in AI and ML, and this project was a great way to demonstrate my
 current skills in these areas.
 
-References
-https://www.geeksforgeeks.org/machine-learning/understanding-tf-idf-term-frequency-inverse-document-frequency/
-https://www.geeksforgeeks.org/nlp/nlp-custom-corpus/
-https://medium.com/@s.aditya1317/n-grams-in-nlp-explained-how-machines-understand-word-sequences-980554511299
-https://fynydd.com/blog/better-search-results-with-character-n-grams/
-https://www.ibm.com/think/topics/logistic-regression
+## Contact Information
+Built by [Nathan Spear](https://www.linkedin.com/in/nathan-spear-16b60b302/?lipi=urn%3Ali%3Apage%3Ad_flagship3_profile_view_base_contact_details%3Bee%2Bn30JASgmmntfzlrsW1g%3D%3D)
+
+## References
+### These are the sources I used to learn and review the NLP and ML topics necessary to complete this project. Also, the Kaggle dataset used for this project is cited in these references.
+
+Aditya S. (2026, July 2). *Machines Understand Word Sequences*. Medium. https://medium.com/@s.aditya1317/n-grams-in-nlp-explained-how-machines-understand-word-sequences-980554511299
+
+Argentini, M. (2026, February 11). *Better search results with character n-grams*. Fynydd. https://fynydd.com/blog/better-search-results-with-character-n-grams/
+
+Gupta, M. (2025, July 11). *NLP | Custom corpus*. GeeksforGeeks. https://www.geeksforgeeks.org/nlp/nlp-custom-corpus/
+
+Lee, F. (2025, May 14). *What is logistic regression?*. IMB Think. https://www.ibm.com/think/topics/logistic-regression
+
+MALIK_AWAIS_PY. (n.d.). *Amazon Labeled Fake Reviews Dataset*. Kaggle. https://www.kaggle.com/datasets/malikawaispy/amazon-labeled-fake-reviews
+
+Saha, R. (2026, July 2). *Understanding TF-IDF (Term Frequency-INverse Document Frequency)*. GeeksforGeeks. https://www.geeksforgeeks.org/machine-learning/understanding-tf-idf-term-frequency-inverse-document-frequency/
+
+scikit-learn. (n.d.). *LogisticRegression*. https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html
+
+scikit-learn. (n.d.). *TfidfVectorizer*. https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.TfidfVectorizer.html
+
+scikit-learn. (n.d.). *train_test_split*. https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html
+
+W3 Schools. (n.d.). *SciPy Sparse Data*. https://www.w3schools.com/python/scipy/scipy_sparse_data.php
