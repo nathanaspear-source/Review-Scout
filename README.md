@@ -110,6 +110,7 @@ venv/bin/python -m streamlit run app.py
 
 - Option B: Run with Docker
 ```bash
+# Run the following commands in the review-scout directory
 docker build -t review-scout .
 docker run -p 8501:8501 review-scout
 ```
