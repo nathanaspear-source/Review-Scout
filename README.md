@@ -88,8 +88,8 @@ to run this app if your primary goal is to use it and see its functionality.
 
 ### 1. Clone Repository
 ```bash
-git clone https://github.com/malik-awais-py/review-scout.git
-cd review-scout
+git clone https://github.com/malik-awais-py/Review-Scout.git
+cd Review-Scout
 ```
 
 ### 2. Running
@@ -110,8 +110,8 @@ streamlit run app.py
 
 - Option B: Run with Docker
 ```bash
-docker build -t review-scout .
-docker run -p 8501:8501 review-scout
+docker build -t Review-Scout .
+docker run -p 8501:8501 Review-Scout
 ```
 
 ## Why I Built Review Scout and What I Learned
