@@ -105,7 +105,7 @@ pip install -r requirements.txt
 python -m ML_NLP.main
 
 # Starts Streamlit app
-streamlit run app.py
+venv/bin/python -m streamlit run app.py
 ```
 
 - Option B: Run with Docker
