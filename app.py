@@ -1,17 +1,35 @@
+"""Contains the code to run the Streamlit UI.
+
+This module contains all the code necessary to run the Streamlit UI of this app.
+Input validation is used to prevent errors from incorrect user input before the ML
+model can be used. The TF-IDF vectorizers and ML model are loaded using joblib and
+cached to prevent them from needing to be reloaded every time a UI element is interacted
+with in Streamlit. After the user inputs their review, the ML model is used to predict whether
+the review they entered is real or fake. The model's confidence and the top 5 terms that contributed
+to its prediction are also displayed.
+
+Available Functions:
+    load_models(): Loads NLP and ML models from disk.
+    ranked_terms(vectorizer, matrix, source, coefficients, top_n=5): Returns a list of
+    dictionaries of the most important terms ranked by score.
+
+
+"""
+
 import streamlit as st
 import joblib
 import pandas as pd
 from scipy.sparse import hstack, csr_matrix
 
 # Caching ML model so it doesn't reload every time
-# a command is run in streamlit
+# a Streamlit UI element is interacted with
 @st.cache_resource
 def load_models():
     """Loads NLP and ML models from disk."""
     return joblib.load("ML_NLP/ml_model/models.joblib")
 
-def ranked_terms(vectorizer, matrix, coefficients, source, top_n=5):
-    """Returns DataFrame of the most important terms ranked by score."""
+def ranked_terms(vectorizer, matrix, source, coefficients, top_n=5):
+    """Returns a list of dictionaries of the most important terms ranked by score."""
     names = vectorizer.get_feature_names_out()
     row = matrix.toarray()[0]
     terms = []
@@ -32,8 +50,8 @@ def ranked_terms(vectorizer, matrix, coefficients, source, top_n=5):
             "direction": "Fake" if contribution > 0 else "Real",
         })
 
-    # Sorting terms to where the terms with largest contributions to prediction
-    # appear first in DataFrame (absolute value removes influence of negative sign
+    # Sorting terms to where the terms with the largest contributions to prediction
+    # appear first in the list (absolute value removes influence of negative sign
     # to focus only on magnitude)
     terms.sort(key=lambda term: abs(term["contribution"]), reverse=True)
     return terms[:top_n]
@@ -45,7 +63,10 @@ st.subheader("NLP + ML Powered Fake Amazon Review Detector")
 st.write("What did the reviewer rate the product")
 star_rating = st.feedback(options="stars")
 
-helpful_votes = st.number_input(label="How many people found this review helpful?", step=1, min_value=0)
+helpful_votes = st.number_input(
+    label="How many people found this review helpful?",
+    step=1,
+    min_value=0)
 
 title = st.text_input("Enter the title of the Amazon review:")
 text = st.text_area("Enter the text of the Amazon review:")
@@ -54,10 +75,10 @@ entered = st.button("Detect Fake Review")
 
 # Using the ML model to predict whether the review is real
 # or fake once the "Detect Fake Review" button is pressed
-if entered == True and (star_rating is None or title.strip() == "" or text.strip() == ""):
+if entered and (star_rating is None or title.strip() == "" or text.strip() == ""):
     st.warning("Please fill in all fields before detecting a fake review.")
 
-elif entered ==True:
+elif entered:
     models = load_models()
 
     # Loading TF-IDF vectorizers and Logistic Regression model
@@ -87,7 +108,7 @@ elif entered ==True:
         new_review[["rating", "helpful_votes"]].values
     )
 
-    # Horizontally stacking all new review features into numpy array
+    # Horizontally stacking all new review features into SciPy Sparse Matrix
     # for model label prediction
     new_review = hstack([
         title,
@@ -117,11 +138,11 @@ elif entered ==True:
     n_title = title.shape[1]
     n_text = text.shape[1]
     title_terms = ranked_terms(
-        title_vectorizer, title, coefficients[:n_title], "title",
+        title_vectorizer, title, "title", coefficients[:n_title],
     )
 
     text_terms = ranked_terms(
-        text_vectorizer, text, coefficients[n_title:n_title + n_text], "text",
+        text_vectorizer, text, "text", coefficients[n_title:n_title + n_text],
     )
 
     n_text_char = text_char.shape[1]
@@ -129,8 +150,8 @@ elif entered ==True:
     char_terms = ranked_terms(
         text_char_vectorizer,
         text_char,
-        coefficients[char_start:char_start + n_text_char],
         "text characters",
+        coefficients[char_start:char_start + n_text_char],
     )
 
     important_words = sorted(
