@@ -177,10 +177,7 @@ print("Top title terms associated with real reviews:")
 print(get_top_words(title_words, title_coefficients, direction=0))
 
 print("\nTop text terms associated with real reviews:")
-print(get_top_words(text_words, text_coefficients, direction=0), "\n")
-
-print("Top text char terms associated with fake reviews:")
-print(get_top_words(char_features, char_coefficients, direction=0))
+print(get_top_words(text_words, text_coefficients, direction=0))
 
 print("\n", "=" * 60, "\n")
 

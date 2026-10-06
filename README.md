@@ -5,19 +5,19 @@
 
 ## Project Description
 **Review Scout** is a Streamlit app that utilizes natural language processing and machine
-learning to predict whether an Amazon review is real or fake. **Review Scount** uses TF-IDF
+learning to predict whether an Amazon review is real or fake. **Review Scout** uses TF-IDF
 Vectorizers to find the most important groups of characters, words, and groups of words in the
 review's title and text corpus, and then uses a logistic regression model trained on these
 features, along with several others including the review star rating to determine whether the inputted
-review is real of fake. Along with the binary (1 is Fake and 0 is Real) prediction, Review Scout provides
+review is real or fake. Along with the binary (1 is Fake and 0 is Real) prediction, Review Scout provides
 the logistic regression model's confidence, as well as the top 5 most important TF-IDF terms that contributed
 to the model's predictions.
 
 ## Table of Contents
 - [Project Description](#project-description)
 - [Features Overview](#features-overview)
-- [Natural Language Processing Explaination](#natural-language-processing-explaination)
-- [Machine Learning Explaination](#machine-learning-explaination)
+- [Natural Language Processing Explanation](#natural-language-processing-explanation)
+- [Machine Learning Explanation](#machine-learning-explanation)
 - [Machine Learning Model Performance Evaluation](#machine-learning-model-performance-evaluation)
 - [Docker Deployment](#docker-deployment)
 - [UI Framework](#ui-framework)
@@ -33,21 +33,21 @@ to the model's predictions.
 - Docker Deployment
 
 
-## Natural Language Processing Explaination
+## Natural Language Processing Explanation
 In the dataset used for this project (Amazon Labeled Fake Reviews Kaggle Dataset by MALIK_AWAIS_PY),
 there are two features that contain corpuses of text; (Title and Text). The title feature represents
 the review's title, and the text feature represents the review's text content. In this project, three
 scikit-learn TF-IDF Vectorizers are used to turn this structured collection of text data into meaningful
 inputs for the logistic regression ML model. The first two TF-IDF Vectorizers, called "title_vectorizer"
 and "text_vectorizer", are used to find the most important unigrams and bigrams in the review's title and text corpus,
-respectively. In this case, unigrams and bigrams are groups of one and two words respecitvely that are used
+respectively. In this case, unigrams and bigrams are groups of one and two words respectively that are used
 to help provide the ML model with context of how words in the text related to one another. The third TF-IDF
 Vectorizer, called "text_char_vectorizer", works a little differently than the other two TF-IDF Vectorizers.
 Instead of finding the most important unigrams and bigrams, it finds the most important groups of 3-5 characters
 within an individual word. This helps improve the performance of the ML model by allowing its TF-IDF term features
 to better capture the importance of words that are misspelled, which can be common in quickly written product reviews.
 
-## Machine Learning Explaination
+## Machine Learning Explanation
 After preprocessing, feature engineering, and splitting the training and test sets of the dataset is completed,
 the features are inputted into a scikit-learn logistic regression model for training. Logistic regression is a simple
 classification ML algorithm that is used to predict a binary outcome. In this case the binary decision is whether a review
@@ -65,7 +65,7 @@ To evaluate the performance of the logistic regression model, I used precision, 
 matrix. The precision, recall, and f1-score values were moderate, all falling between 0.75 and 0.78. The support value was almost a 
 50/50 split between classes 1 and 0. The training and test sets were mostly balanced because I used a stratified split, which preserves 
 the ratio of the label classes in the training and test sets. According to the confusion matrix, the model was able to correctly predict 
-3,957 out of 5,056 of the positive class (1) and 1,231 out of the 4,940 of the negative class (0) correctly.
+3,957 out of 5,056 reviews in class 0 (real) and 3,709 out of the 4,940 of the reviews in class 1 (fake) correctly.
 
 ## Docker Deployment
 I used Docker to containerize this app. This makes it easy to build and run this application. All necessary steps to build and run
@@ -137,7 +137,7 @@ Argentini, M. (2026, February 11). *Better search results with character n-grams
 
 Gupta, M. (2025, July 11). *NLP | Custom corpus*. GeeksforGeeks. https://www.geeksforgeeks.org/nlp/nlp-custom-corpus/
 
-Lee, F. (2025, May 14). *What is logistic regression?*. IMB Think. https://www.ibm.com/think/topics/logistic-regression
+Lee, F. (2025, May 14). *What is logistic regression?*. IBM Think. https://www.ibm.com/think/topics/logistic-regression
 
 MALIK_AWAIS_PY. (n.d.). *Amazon Labeled Fake Reviews Dataset*. Kaggle. https://www.kaggle.com/datasets/malikawaispy/amazon-labeled-fake-reviews
 

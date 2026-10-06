@@ -45,7 +45,7 @@ st.subheader("NLP + ML Powered Fake Amazon Review Detector")
 st.write("What did the reviewer rate the product")
 star_rating = st.feedback(options="stars")
 
-helpful_votes = st.number_input(label="How many people found this review helpful?", step=1)
+helpful_votes = st.number_input(label="How many people found this review helpful?", step=1, min_value=0)
 
 title = st.text_input("Enter the title of the Amazon review:")
 text = st.text_area("Enter the text of the Amazon review:")
@@ -53,8 +53,11 @@ text = st.text_area("Enter the text of the Amazon review:")
 entered = st.button("Detect Fake Review")
 
 # Using the ML model to predict whether the review is real
-# or fake once the "Detect Fake "Review" button is pressed
-if entered == True:
+# or fake once the "Detect Fake Review" button is pressed
+if entered == True and (star_rating is None or title.strip() == "" or text.strip() == ""):
+    st.warning("Please fill in all fields before detecting a fake review.")
+
+elif entered ==True:
     models = load_models()
 
     # Loading TF-IDF vectorizers and Logistic Regression model
@@ -109,7 +112,7 @@ if entered == True:
         st.subheader("❌ This review is likely fake.")
         st.subheader(f"Prediction Confidence: {prediction_confidence}%")
 
-    # Finding most important words that contributed to ML model's prediction
+    # Finding the most important words and characters that contributed to ML model's prediction
     coefficients = loaded_model.coef_[0]
     n_title = title.shape[1]
     n_text = text.shape[1]
@@ -121,13 +124,21 @@ if entered == True:
         text_vectorizer, text, coefficients[n_title:n_title + n_text], "text",
     )
 
-    important_words = sorted(
-        title_terms + text_terms,
-        key=lambda term: abs(term["contribution"]),
-        reverse=True,
+    n_text_char = text_char.shape[1]
+    char_start = n_title + n_text
+    char_terms = ranked_terms(
+        text_char_vectorizer,
+        text_char,
+        coefficients[char_start:char_start + n_text_char],
+        "text characters",
     )
 
-    # Displaying terms with greatest contribution to ML model's prediction
-    st.subheader("Top 5 words that most affected this prediction")
-    st.dataframe(pd.DataFrame(important_words[:5]))
+    important_words = sorted(
+        title_terms + text_terms + char_terms,
+        key=lambda term: abs(term["contribution"]),
+        reverse=True,
+    )[:5]
 
+    # Displaying terms with the greatest contribution to ML model's prediction
+    st.subheader("Top 5 terms that most affected this prediction")
+    st.dataframe(pd.DataFrame(important_words[:5]))
