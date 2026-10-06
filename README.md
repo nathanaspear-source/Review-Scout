@@ -105,7 +105,8 @@ pip install -r requirements.txt
 python -m ML_NLP.main
 
 # Starts Streamlit app
-venv/bin/python -m streamlit run app.py
+venv/bin/python -m streamlit run app.py               # macOS/Linux
+# venv\Scripts\python -m streamlit run app.py         # Windows PowerShell
 ```
 
 - Option B: Run with Docker
